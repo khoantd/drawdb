@@ -1,0 +1,815 @@
+# DrawDB - Database Schema Editor
+
+## Project Overview
+DrawDB is a React-based database entity relationship (DBER) editor that allows users to create, edit, and export database schemas visually. The application supports multiple database types (MySQL, PostgreSQL, SQLite, MariaDB, MSSQL, Oracle) and provides SQL export functionality.
+
+## Architecture & Technology Stack
+
+### Core Technologies
+- **React 18** with functional components and hooks
+- **Vite** for build tooling and development server
+- **React Router DOM** for client-side routing
+- **Tailwind CSS** for styling with custom configuration
+- **Semi UI** (@douyinfe/semi-ui) for UI components
+- **Framer Motion** for animations
+- **Lexical** for rich text editing
+- **Monaco Editor** for code editing
+- **Dexie** for client-side database storage
+
+### Key Libraries
+- **@dnd-kit** for drag and drop functionality
+- **i18next** for internationalization (40+ languages supported)
+- **nanoid** for unique ID generation
+- **lodash** for utility functions
+- **axios** for HTTP requests
+- **jsonschema** for validation
+
+### Development Tools
+- **ESLint** with React-specific rules
+- **Prettier** for code formatting
+- **PostCSS** for CSS processing
+
+## Project Structure
+
+### Core Directories
+```
+src/
+├── components/          # Reusable UI components
+├── context/            # React Context providers
+├── hooks/              # Custom React hooks
+├── pages/              # Route components
+├── utils/              # Utility functions
+├── data/               # Constants and configuration
+├── i18n/               # Internationalization files
+├── assets/             # Static assets
+└── templates/          # Database templates
+```
+
+### Key Context Providers
+- `DiagramContext` - Core diagram state (tables, relationships)
+- `CanvasContext` - Canvas viewport and pointer state
+- `SettingsContext` - User preferences and settings
+- `SelectContext` - Element selection state
+- `TransformContext` - Canvas transformations (pan, zoom)
+- `UndoRedoContext` - History management
+- `LayoutContext` - UI layout state
+- `SaveStateContext` - Save/load operations
+
+## Code Patterns & Conventions
+
+### Component Structure
+- Use functional components with hooks
+- Prefer composition over inheritance
+- Keep components focused and single-purpose
+- Use custom hooks for shared logic
+
+### State Management
+- Use React Context for global state
+- Custom hooks for state logic encapsulation
+- Local state for component-specific data
+- Immutable state updates with spread operators
+
+### Naming Conventions
+- **Components**: PascalCase (e.g., `EditorCanvas`, `SidePanel`)
+- **Hooks**: camelCase starting with 'use' (e.g., `useDiagram`, `useTransform`)
+- **Files**: PascalCase for components, camelCase for utilities
+- **Constants**: UPPER_SNAKE_CASE (e.g., `ObjectType`, `Action`)
+- **Variables**: camelCase
+
+## Detailed Naming Conventions
+
+### File Naming Rules
+- **Component Files**: PascalCase (e.g., `EditorCanvas.jsx`, `SidePanel.jsx`)
+- **Utility Files**: camelCase (e.g., `calcPath.js`, `exportSQL.js`)
+- **Hook Files**: camelCase starting with 'use' (e.g., `useDiagram.js`, `useTransform.js`)
+- **Context Files**: PascalCase with 'Context' suffix (e.g., `DiagramContext.jsx`)
+- **Test Files**: Component name with `.test.js` suffix (e.g., `EditorCanvas.test.js`)
+- **CSS Modules**: camelCase (e.g., `editorCanvas.module.css`)
+
+### Directory Naming
+- **Component Directories**: PascalCase (e.g., `EditorCanvas/`, `SidePanel/`)
+- **Utility Directories**: lowercase with hyphens (e.g., `export-sql/`, `import-from/`)
+- **Feature Directories**: camelCase (e.g., `codeEditor/`, `lexicalEditor/`)
+
+### Variable and Function Naming
+- **Event Handlers**: `handle` prefix (e.g., `handleClick`, `handleSubmit`)
+- **Callback Props**: `on` prefix (e.g., `onClick`, `onChange`)
+- **Boolean Variables**: `is`, `has`, `should` prefixes (e.g., `isVisible`, `hasError`, `shouldUpdate`)
+- **Arrays**: Plural forms (e.g., `tables`, `relationships`, `users`)
+- **Functions**: Verb-based (e.g., `calculatePath`, `exportSchema`, `validateInput`)
+- **Async Functions**: Clear action names (e.g., `fetchUserData`, `saveDiagram`)
+
+### Props Naming
+- **Boolean Props**: `is`, `has`, `should` prefixes (e.g., `isVisible`, `hasError`)
+- **Callback Props**: `on` prefix (e.g., `onClick`, `onChange`, `onSubmit`)
+- **Render Props**: `render` prefix (e.g., `renderHeader`, `renderFooter`)
+- **Data Props**: Descriptive nouns (e.g., `tableData`, `userInfo`, `diagramConfig`)
+
+### State Naming
+- **useState Pairs**: Descriptive names with `set` prefix (e.g., `isLoading`/`setIsLoading`)
+- **Derived State**: Clear relationship to source (e.g., `filteredTables` from `tables`)
+- **Refs**: `ref` suffix (e.g., `canvasRef`, `inputRef`)
+
+### Context and Hook Naming
+- **Context Files**: PascalCase with 'Context' suffix
+- **Custom Hooks**: camelCase starting with 'use' (e.g., `useDiagram`, `useCanvas`)
+- **Hook Return Values**: Object with descriptive keys (e.g., `{ tables, addTable, updateTable }`)
+
+### Constants and Enums
+- **Module Constants**: UPPER_SNAKE_CASE (e.g., `MAX_TABLES`, `DEFAULT_ZOOM`)
+- **Magic Numbers**: Named constants (e.g., `const GRID_SIZE = 20`)
+- **Config Objects**: camelCase (e.g., `editorConfig`, `databaseConfig`)
+
+### CSS and Styling
+- **Tailwind Classes**: Use semantic class names, group related classes
+- **CSS Modules**: camelCase (e.g., `editorCanvas`, `sidePanel`)
+- **CSS Variables**: kebab-case (e.g., `--primary-color`, `--grid-size`)
+
+### i18n Keys
+- **Translation Keys**: snake_case with context (e.g., `add_table`, `delete_relationship`)
+- **Namespacing**: Use dots for hierarchy (e.g., `canvas.zoom_in`, `tables.add_column`)
+
+## Component Design Standards
+
+### Component Structure Template
+```javascript
+// 1. React and React-related imports
+import React, { useState, useEffect } from 'react';
+
+// 2. Third-party libraries
+import { motion } from 'framer-motion';
+import { Button } from '@douyinfe/semi-ui';
+
+// 3. Internal components and hooks
+import { useDiagram } from '../hooks/useDiagram';
+import { useCanvas } from '../hooks/useCanvas';
+
+// 4. Utilities and constants
+import { calculatePath } from '../utils/calcPath';
+import { ObjectType } from '../data/constants';
+
+// 5. Relative imports
+import './ComponentName.css';
+
+const ComponentName = ({ 
+  isVisible = true, 
+  onUpdate, 
+  data = [] 
+}) => {
+  // State declarations
+  const [isLoading, setIsLoading] = useState(false);
+  const { tables, addTable } = useDiagram();
+  
+  // Effects
+  useEffect(() => {
+    // Effect logic
+  }, [dependency]);
+  
+  // Event handlers
+  const handleClick = () => {
+    // Handler logic
+  };
+  
+  // Render
+  return (
+    <div className="component-name">
+      {/* Component content */}
+    </div>
+  );
+};
+
+export default ComponentName;
+```
+
+### Props Design
+```javascript
+// ✅ Good: Destructured with defaults
+const TableEditor = ({ 
+  table = null, 
+  isVisible = false, 
+  onSave = () => {}, 
+  onCancel = () => {} 
+}) => {};
+
+// ✅ Good: Boolean props with clear names
+const Modal = ({ isOpen, hasCloseButton = true, shouldAnimate = false }) => {};
+
+// ❌ Bad: Unclear boolean props
+const Modal = ({ open, close, animate }) => {};
+
+// ✅ Good: Callback props with descriptive names
+const Form = ({ onSubmit, onValidationError, onFieldChange }) => {};
+```
+
+### Component Size Guidelines
+- **Single Responsibility**: One component, one purpose
+- **Split When**: Component exceeds 200 lines or handles multiple concerns
+- **Extract When**: Logic can be reused or tested independently
+- **Compose When**: Multiple related components work together
+
+```javascript
+// ✅ Good: Focused component
+const TableHeader = ({ title, onSort, sortDirection }) => {
+  return (
+    <th onClick={onSort}>
+      {title} {sortDirection && <SortIcon direction={sortDirection} />}
+    </th>
+  );
+};
+
+// ❌ Bad: Too many responsibilities
+const TableEditor = ({ table, onSave, onDelete, onExport, onImport, onValidate }) => {
+  // Handles editing, saving, deleting, exporting, importing, validating
+};
+```
+
+### Composition Patterns
+```javascript
+// ✅ Good: Children props for flexibility
+const SidePanel = ({ children, isCollapsed }) => {
+  return (
+    <aside className={`side-panel ${isCollapsed ? 'collapsed' : ''}`}>
+      {children}
+    </aside>
+  );
+};
+
+// ✅ Good: Render props for dynamic content
+const DataTable = ({ data, renderRow, renderEmpty }) => {
+  return (
+    <table>
+      {data.length > 0 ? data.map(renderRow) : renderEmpty()}
+    </table>
+  );
+};
+
+// ✅ Good: Compound components
+const Modal = ({ children }) => <div className="modal">{children}</div>;
+Modal.Header = ({ children }) => <div className="modal-header">{children}</div>;
+Modal.Body = ({ children }) => <div className="modal-body">{children}</div>;
+Modal.Footer = ({ children }) => <div className="modal-footer">{children}</div>;
+```
+
+### State Management Rules
+```javascript
+// ✅ Good: Local state for component-specific data
+const TableEditor = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({});
+  
+  // Use context for shared state
+  const { tables, updateTable } = useDiagram();
+};
+
+// ✅ Good: Lift state when multiple components need it
+const Canvas = () => {
+  const [selectedElement, setSelectedElement] = useState(null);
+  
+  return (
+    <>
+      <CanvasView selectedElement={selectedElement} onSelect={setSelectedElement} />
+      <PropertiesPanel selectedElement={selectedElement} />
+    </>
+  );
+};
+```
+
+### Side Effects Best Practices
+```javascript
+// ✅ Good: Clear dependencies and cleanup
+useEffect(() => {
+  const handleResize = () => {
+    // Resize logic
+  };
+  
+  window.addEventListener('resize', handleResize);
+  
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, []); // Empty dependency array for mount/unmount only
+
+// ✅ Good: Effect with proper dependencies
+useEffect(() => {
+  if (tableId) {
+    fetchTableData(tableId);
+  }
+}, [tableId]); // Re-run when tableId changes
+```
+
+### Event Handlers
+```javascript
+// ✅ Good: Named handlers for complex logic
+const TableRow = ({ table, onEdit, onDelete }) => {
+  const handleEdit = () => {
+    // Complex edit logic
+    onEdit(table.id);
+  };
+  
+  const handleDelete = () => {
+    if (confirm('Are you sure?')) {
+      onDelete(table.id);
+    }
+  };
+  
+  return (
+    <tr>
+      <td>{table.name}</td>
+      <td>
+        <button onClick={handleEdit}>Edit</button>
+        <button onClick={handleDelete}>Delete</button>
+      </td>
+    </tr>
+  );
+};
+
+// ✅ Good: Inline for simple handlers
+const Button = ({ onClick, children }) => (
+  <button onClick={onClick}>{children}</button>
+);
+```
+
+### Conditional Rendering
+```javascript
+// ✅ Good: Logical operators for simple conditions
+{isVisible && <Component />}
+{hasError && <ErrorMessage error={error} />}
+
+// ✅ Good: Ternary for if/else
+{isLoading ? <Spinner /> : <Content />}
+
+// ✅ Good: Early return for complex conditions
+const TableList = ({ tables }) => {
+  if (!tables || tables.length === 0) {
+    return <EmptyState />;
+  }
+  
+  if (tables.length > 100) {
+    return <VirtualizedTable tables={tables} />;
+  }
+  
+  return <SimpleTable tables={tables} />;
+};
+```
+
+### Lists and Keys
+```javascript
+// ✅ Good: Stable, unique keys
+const TableList = ({ tables }) => {
+  return (
+    <ul>
+      {tables.map(table => (
+        <TableItem 
+          key={table.id} // Use stable ID, not index
+          table={table} 
+        />
+      ))}
+    </ul>
+  );
+};
+
+// ✅ Good: Key for list items with stable identity
+const RelationshipList = ({ relationships }) => {
+  return relationships.map(rel => (
+    <Relationship 
+      key={`${rel.fromTable}-${rel.toTable}`} // Composite key
+      relationship={rel} 
+    />
+  ));
+};
+```
+
+### Performance Optimization
+```javascript
+// ✅ Good: Memo for expensive components
+const ExpensiveTable = React.memo(({ tables, onUpdate }) => {
+  return (
+    <div>
+      {tables.map(table => (
+        <TableRow key={table.id} table={table} onUpdate={onUpdate} />
+      ))}
+    </div>
+  );
+});
+
+// ✅ Good: useMemo for expensive calculations
+const Canvas = ({ tables, relationships }) => {
+  const tablePositions = useMemo(() => {
+    return calculateOptimalPositions(tables, relationships);
+  }, [tables, relationships]);
+  
+  const pathData = useMemo(() => {
+    return relationships.map(rel => calculatePath(rel));
+  }, [relationships]);
+  
+  return <SVGCanvas positions={tablePositions} paths={pathData} />;
+};
+
+// ✅ Good: useCallback for stable function references
+const TableEditor = ({ onSave }) => {
+  const handleSave = useCallback((data) => {
+    onSave(data);
+  }, [onSave]);
+  
+  return <Form onSave={handleSave} />;
+};
+```
+
+### Error Handling
+```javascript
+// ✅ Good: Error boundary for component trees
+const CanvasWithErrorBoundary = () => (
+  <ErrorBoundary fallback={<CanvasErrorFallback />}>
+    <Canvas />
+  </ErrorBoundary>
+);
+
+// ✅ Good: Graceful degradation
+const TableView = ({ table }) => {
+  if (!table) {
+    return <div>No table selected</div>;
+  }
+  
+  try {
+    return <TableRenderer table={table} />;
+  } catch (error) {
+    console.error('Table rendering failed:', error);
+    return <div>Failed to render table</div>;
+  }
+};
+```
+
+### Accessibility in Components
+```javascript
+// ✅ Good: Proper ARIA attributes
+const Modal = ({ isOpen, onClose, children }) => {
+  return (
+    <div 
+      className="modal" 
+      role="dialog" 
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <h2 id="modal-title">Modal Title</h2>
+      {children}
+      <button onClick={onClose} aria-label="Close modal">×</button>
+    </div>
+  );
+};
+
+// ✅ Good: Keyboard navigation
+const TableRow = ({ table, onSelect, isSelected }) => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onSelect(table.id);
+    }
+  };
+  
+  return (
+    <tr 
+      tabIndex={0}
+      className={isSelected ? 'selected' : ''}
+      onClick={() => onSelect(table.id)}
+      onKeyDown={handleKeyDown}
+      role="button"
+      aria-selected={isSelected}
+    >
+      <td>{table.name}</td>
+    </tr>
+  );
+};
+```
+
+### Styling Approach
+```javascript
+// ✅ Good: Semantic Tailwind classes
+const Button = ({ variant = 'primary', size = 'medium', children }) => {
+  const baseClasses = 'font-medium rounded transition-colors';
+  const variantClasses = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700',
+    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
+    danger: 'bg-red-600 text-white hover:bg-red-700'
+  };
+  const sizeClasses = {
+    small: 'px-2 py-1 text-sm',
+    medium: 'px-4 py-2',
+    large: 'px-6 py-3 text-lg'
+  };
+  
+  return (
+    <button 
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ✅ Good: Responsive design with Tailwind
+const SidePanel = ({ isCollapsed }) => {
+  return (
+    <aside className={`
+      fixed top-0 right-0 h-full bg-white shadow-lg
+      transition-transform duration-300 ease-in-out
+      ${isCollapsed ? 'translate-x-full' : 'translate-x-0'}
+      md:w-80 w-full
+    `}>
+      {/* Panel content */}
+    </aside>
+  );
+};
+```
+
+### Key Constants (from constants.js)
+```javascript
+// Object types
+ObjectType = { NONE: 0, TABLE: 1, AREA: 2, NOTE: 3, RELATIONSHIP: 4, TYPE: 5, ENUM: 6 }
+
+// Actions for undo/redo
+Action = { ADD: 0, MOVE: 1, DELETE: 2, EDIT: 3 }
+
+// Database types
+DB = { MYSQL: "mysql", POSTGRES: "postgresql", MSSQL: "transactsql", SQLITE: "sqlite", MARIADB: "mariadb", ORACLESQL: "oraclesql", GENERIC: "generic" }
+
+// Cardinality types
+Cardinality = { ONE_TO_ONE: "one_to_one", ONE_TO_MANY: "one_to_many", MANY_TO_ONE: "many_to_one" }
+```
+
+## Component Guidelines
+
+### Canvas Components
+- `Canvas.jsx` - Main canvas with SVG rendering
+- `Table.jsx` - Database table visualization
+- `Relationship.jsx` - Table relationship lines
+- `Area.jsx` - Subject area containers
+- `Note.jsx` - Text notes on canvas
+
+### Side Panel Components
+- `SidePanel.jsx` - Main side panel container
+- `TablesTab/` - Table management interface
+- `RelationshipsTab/` - Relationship management
+- `AreasTab/` - Subject area management
+- `NotesTab/` - Note management
+- `TypesTab/` - Custom type definitions
+- `EnumsTab/` - Enum definitions
+
+### Editor Components
+- `CodeEditor/` - Monaco editor integration
+- `LexicalEditor/` - Rich text editor
+- `FloatingControls.jsx` - Canvas action buttons
+
+## Data Flow Patterns
+
+### State Updates
+1. User interaction triggers event
+2. Event handler calls context method
+3. Context updates state immutably
+4. Components re-render with new state
+5. Undo/redo stack is updated if applicable
+
+### Canvas Interactions
+1. Pointer events captured on SVG canvas
+2. Coordinate transformations applied
+3. Element selection/dragging logic
+4. State updates propagated through contexts
+5. Visual feedback provided immediately
+
+## Database Support
+
+### Supported Databases
+- MySQL
+- PostgreSQL  
+- SQLite
+- MariaDB
+- Microsoft SQL Server
+- Oracle SQL
+- Generic (DBML)
+
+### Export Functionality
+- SQL generation for each database type
+- DBML export
+- Mermaid diagram export
+- Documentation generation
+- Image export (PNG)
+
+## Internationalization
+
+### Supported Languages
+40+ languages including English, Spanish, French, German, Chinese, Japanese, Arabic, Hindi, and many more.
+
+### Translation Keys
+- Use descriptive keys (e.g., `add_table`, `delete_relationship`)
+- Include context in keys when needed
+- Support RTL languages with `isRtl()` utility
+
+## Performance Considerations
+
+### Optimization Strategies
+- Lazy loading of components with `lazyRender`
+- Memoization with `useMemo` for expensive calculations
+- Efficient re-rendering with proper dependency arrays
+- Canvas virtualization for large diagrams
+- Debounced operations for frequent updates
+
+### Memory Management
+- Cleanup event listeners in useEffect
+- Proper dependency arrays in hooks
+- Avoid memory leaks in canvas operations
+
+## Development Guidelines
+
+### Code Quality
+- Follow ESLint rules strictly
+- Use Prettier for consistent formatting
+- Write self-documenting code
+- Prefer explicit over implicit
+
+### Testing Approach
+- Component testing for UI logic
+- Integration testing for data flow
+- Manual testing for canvas interactions
+- Cross-browser compatibility testing
+
+### Error Handling
+- Graceful degradation for unsupported features
+- User-friendly error messages
+- Toast notifications for user feedback
+- Validation before destructive operations
+
+## File Organization
+
+### Import Order
+1. React and React-related imports
+2. Third-party libraries
+3. Internal components and hooks
+4. Utilities and constants
+5. Relative imports
+
+### Component Exports
+- Default export for main component
+- Named exports for sub-components
+- Barrel exports in index files
+
+## Canvas-Specific Patterns
+
+### SVG Rendering
+- Use SVG for scalable graphics
+- Pattern definitions for grid
+- Proper viewBox management
+- Event handling on SVG elements
+
+### Coordinate Systems
+- Screen coordinates for mouse events
+- Diagram coordinates for positioning
+- Transform matrices for pan/zoom
+- Grid snapping for alignment
+
+### Interaction Handling
+- Pointer events for modern input
+- Touch support for mobile
+- Keyboard shortcuts for power users
+- Accessibility considerations
+
+## Export/Import Patterns
+
+### Data Serialization
+- JSON format for project files
+- DBML format for database schemas
+- SQL generation per database type
+- Image export with proper scaling
+
+### File Operations
+- Client-side storage with Dexie
+- File system API for downloads
+- Import validation and error handling
+- Template system for quick starts
+
+## Security Considerations
+
+### Client-Side Security
+- Input validation and sanitization
+- XSS prevention in user content
+- Safe file handling
+- No server-side dependencies for core functionality
+
+### Data Privacy
+- Local storage only by default
+- Optional server integration
+- No data collection without consent
+- Secure sharing mechanisms
+
+## Accessibility
+
+### Keyboard Navigation
+- Tab order for form elements
+- Arrow keys for canvas navigation
+- Escape key for canceling operations
+- Enter key for confirmations
+
+### Screen Reader Support
+- Proper ARIA labels
+- Semantic HTML structure
+- Alternative text for images
+- Focus management
+
+## Performance Monitoring
+
+### Metrics to Track
+- Canvas rendering performance
+- Memory usage with large diagrams
+- Export operation timing
+- User interaction responsiveness
+
+### Optimization Targets
+- 60fps for canvas interactions
+- <100ms for state updates
+- <1s for export operations
+- Minimal memory footprint
+
+## Future Considerations
+
+### Scalability
+- Support for larger diagrams
+- Better performance with many elements
+- Improved mobile experience
+- Real-time collaboration features
+
+### Extensibility
+- Plugin system for custom functionality
+- API for third-party integrations
+- Custom database type support
+- Advanced export formats
+
+## Common Patterns
+
+### Context Usage
+```javascript
+// Always use custom hooks to access context
+const { tables, addTable, updateTable } = useDiagram();
+```
+
+### Event Handling
+```javascript
+// Use pointer events for modern input
+onPointerDown={handlePointerDown}
+onPointerMove={handlePointerMove}
+onPointerUp={handlePointerUp}
+```
+
+### State Updates
+```javascript
+// Immutable updates with spread operator
+setTables(prev => prev.map(table => 
+  table.id === id ? { ...table, ...updates } : table
+));
+```
+
+### Conditional Rendering
+```javascript
+// Use logical operators for simple conditions
+{settings.showGrid && <GridPattern />}
+```
+
+### Error Boundaries
+```javascript
+// Wrap components that might fail
+<ErrorBoundary fallback={<ErrorFallback />}>
+  <Canvas />
+</ErrorBoundary>
+```
+
+## Best Practices
+
+1. **Keep components small and focused**
+2. **Use custom hooks for shared logic**
+3. **Prefer composition over inheritance**
+4. **Use TypeScript for better type safety**
+5. **Write tests for critical functionality**
+6. **Document complex algorithms**
+7. **Follow the established patterns**
+8. **Optimize for performance**
+9. **Ensure accessibility**
+10. **Maintain code consistency**
+
+## Debugging Tips
+
+### Canvas Issues
+- Check coordinate transformations
+- Verify SVG viewBox settings
+- Use debug coordinates display
+- Inspect pointer event handling
+
+### State Issues
+- Use React DevTools
+- Check context providers
+- Verify hook dependencies
+- Monitor re-render cycles
+
+### Performance Issues
+- Profile with React DevTools
+- Check for unnecessary re-renders
+- Optimize expensive calculations
+- Monitor memory usage
+
+Remember: This is a complex visual editor with many moving parts. Always consider the user experience and maintain the high quality standards established in the codebase.
