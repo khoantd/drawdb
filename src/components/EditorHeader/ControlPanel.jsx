@@ -1522,6 +1522,9 @@ export default function ControlPanel({
       language: {
         function: () => setModal(MODAL.LANGUAGE),
       },
+      ai_assistant: {
+        function: () => setModal(MODAL.AI_SETTINGS),
+      },
       export_saved_data: {
         function: exportSavedData,
       },

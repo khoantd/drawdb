@@ -10,7 +10,12 @@ import NotFound from "./pages/NotFound";
 export default function App() {
   return (
     <SettingsContextProvider>
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+      >
         <RestoreScroll />
         <Routes>
           <Route path="/" element={<LandingPage />} />

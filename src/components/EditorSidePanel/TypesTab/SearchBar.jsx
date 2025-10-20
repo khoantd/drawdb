@@ -23,6 +23,8 @@ export default function Searchbar() {
 
   return (
     <AutoComplete
+      id="types-search"
+      name="types-search"
       data={filteredResult}
       value={value}
       showClear

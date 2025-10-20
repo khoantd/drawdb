@@ -19,6 +19,8 @@ import {
   useEnums,
 } from "../hooks";
 import FloatingControls from "./FloatingControls";
+import FloatingAIButton from "./AIAssistant/FloatingAIButton";
+import AIChatPanel from "./AIAssistant/AIChatPanel";
 import { Button, Modal, Tag } from "@douyinfe/semi-ui";
 import { IconAlertTriangle } from "@douyinfe/semi-icons";
 import { useTranslation } from "react-i18next";
@@ -474,6 +476,10 @@ export default function WorkSpace() {
               <FloatingControls />
             </div>
           )}
+          
+          {/* AI Assistant Components */}
+          <FloatingAIButton />
+          <AIChatPanel />
         </div>
       </div>
       <Modal

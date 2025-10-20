@@ -23,6 +23,8 @@ export default function SearchBar() {
 
   return (
     <AutoComplete
+      id="relationships-search"
+      name="relationships-search"
       data={filteredResult}
       value={searchText}
       showClear

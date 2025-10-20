@@ -21,6 +21,8 @@ export default function SearchBar({ setActiveKey }) {
 
   return (
     <AutoComplete
+      id="notes-search"
+      name="notes-search"
       data={filteredResult}
       value={searchText}
       showClear

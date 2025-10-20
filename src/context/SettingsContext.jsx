@@ -13,6 +13,11 @@ const defaultSettings = {
   showRelationshipLabels: true,
   tableWidth: tableWidth,
   showDebugCoordinates: false,
+  // AI Companion settings
+  aiEnabled: true,
+  aiEndpoint: "",
+  aiApiKey: "",
+  aiModel: "gpt-3.5-turbo",
 };
 
 export const SettingsContext = createContext(defaultSettings);
@@ -21,9 +26,11 @@ export default function SettingsContextProvider({ children }) {
   const [settings, setSettings] = useState(defaultSettings);
 
   useEffect(() => {
-    const settings = localStorage.getItem("settings");
-    if (settings) {
-      setSettings(JSON.parse(settings));
+    const savedSettings = localStorage.getItem("settings");
+    if (savedSettings) {
+      const parsedSettings = JSON.parse(savedSettings);
+      console.log("Loading settings from localStorage:", parsedSettings);
+      setSettings(parsedSettings);
     }
   }, []);
 

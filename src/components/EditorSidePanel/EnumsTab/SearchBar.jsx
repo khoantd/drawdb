@@ -21,6 +21,8 @@ export default function SearchBar() {
 
   return (
     <AutoComplete
+      id="enums-search"
+      name="enums-search"
       data={filteredResult}
       value={value}
       showClear

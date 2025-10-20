@@ -40,6 +40,7 @@ import Open from "./Open";
 import Rename from "./Rename";
 import SetTableWidth from "./SetTableWidth";
 import Share from "./Share";
+import AISettings from "../../AIAssistant/AISettings";
 
 const extensionToLanguage = {
   md: "markdown",
@@ -264,6 +265,9 @@ export default function Modal({
         i18n.changeLanguage(uncontrolledLanguage);
         setModal(MODAL.NONE);
         return;
+      case MODAL.AI_SETTINGS:
+        setModal(MODAL.NONE);
+        return;
       default:
         setModal(MODAL.NONE);
         return;
@@ -362,6 +366,8 @@ export default function Modal({
         );
       case MODAL.SHARE:
         return <Share title={title} setModal={setModal} />;
+      case MODAL.AI_SETTINGS:
+        return <AISettings />;
       default:
         return <></>;
     }

@@ -21,6 +21,8 @@ export default function SearchBar() {
 
   return (
     <AutoComplete
+      id="areas-search"
+      name="areas-search"
       data={filteredResult}
       value={searchText}
       showClear
