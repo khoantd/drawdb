@@ -813,3 +813,58 @@ setTables(prev => prev.map(table =>
 - Monitor memory usage
 
 Remember: This is a complex visual editor with many moving parts. Always consider the user experience and maintain the high quality standards established in the codebase.
+
+
+---
+
+## Cursor Rules Addendum (Practical Guidance)
+
+### Core Commands
+- Dev: `npm run dev`
+- Build: `npm run build`
+- Preview build: `npm run preview`
+- Lint: `npm run lint`
+- Format: `npm run format`
+
+### Safe-Editing Guardrails
+- Keep edits surgical: prefer focused changes in the smallest responsible component/hook.
+- Do not refactor broadly across `src/components/EditorCanvas/` or context files in a single edit; split logically.
+- Preserve existing public props and context APIs; add new props with safe defaults.
+- Maintain naming and file conventions already documented above.
+
+### Performance Checklist (before merging)
+- Memoize expensive subtrees with `React.memo`.
+- Use `useMemo`/`useCallback` for derived data and stable handlers.
+- Avoid creating new objects/arrays in JSX props without memoization.
+- Debounce frequent canvas or input-driven updates.
+
+### Accessibility Checklist
+- Interactive elements must be keyboard focusable and operable (Enter/Space).
+- Provide `aria-*` attributes where appropriate; keep semantic HTML.
+- Ensure visible focus styles and sufficient color contrast.
+
+### i18n Rules
+- Never hardcode user-facing strings. Add keys in `src/i18n/locales/en.js`, then reference via i18n.
+- Use snake_case keys with context (e.g., `tables.add_column`).
+- Support RTL by using existing `isRtl()` utilities where layout is affected.
+
+### Styling Rules
+- Prefer Tailwind utility classes; keep semantic grouping in className strings.
+- For component variants/sizes, use small mapping objects rather than long ternaries.
+
+### Editor/Canvas Specific
+- Coordinate transforms must go through existing utilities and contexts; avoid ad-hoc math.
+- When adding relationships/tables logic, update undo/redo and selection behavior consistently.
+- Keep SVG updates minimal; batch state updates where possible.
+
+### Testing/Validation
+- Run `npm run lint` and ensure zero errors before commit.
+- Validate schema-related changes with `utils/validateSchema.js` pathways where relevant.
+- Manually test: add/edit/move tables, create relationships, undo/redo, export SQL.
+
+### PR Review Checklist
+- Naming matches conventions; files placed in correct directories.
+- No regressions to existing shortcuts, selection, or zoom/pan behavior.
+- Strings are internationalized; no English literals in components.
+- No unnecessary re-renders introduced (profiled where applicable).
+- Screens are responsive and accessible.
