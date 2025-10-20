@@ -24,7 +24,7 @@ export default function ColorPicker({
     >
       <SemiColorPicker
         {...props}
-        value={SemiColorPicker.colorStringToValue(value)}
+        value={value ? SemiColorPicker.colorStringToValue(value) : undefined}
         onChange={({ hex: color }) => {
           if (readOnly) return;
           setPickedColor(color);
@@ -34,7 +34,7 @@ export default function ColorPicker({
         {children || (
           <div
             className="h-8 w-8 rounded-md"
-            style={{ backgroundColor: value }}
+            style={{ backgroundColor: value || '#ffffff' }}
           />
         )}
       </SemiColorPicker>

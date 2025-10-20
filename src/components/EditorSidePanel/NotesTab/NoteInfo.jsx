@@ -131,7 +131,7 @@ export default function NoteInfo({ data, nid }) {
           <ColorPicker
             usePopover={true}
             readOnly={layout.readOnly}
-            value={data.color}
+            value={data.color || "#fcf7ac"}
             onChange={(color) => updateNote(data.id, { color })}
             onColorPick={(color) => handleColorPick(color)}
           />

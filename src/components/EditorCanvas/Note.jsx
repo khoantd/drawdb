@@ -181,11 +181,15 @@ export default function Note({ data, onPointerDown }) {
 
   useEffect(() => {
     const textarea = document.getElementById(`note_${data.id}`);
-    textarea.style.height = "0";
-    textarea.style.height = textarea.scrollHeight + "px";
-    const newHeight = textarea.scrollHeight + 42;
-    updateNote(data.id, { height: newHeight });
-  }, [data.id, updateNote]);
+    if (textarea) {
+      textarea.style.height = "0";
+      textarea.style.height = textarea.scrollHeight + "px";
+      const newHeight = textarea.scrollHeight + 42;
+      if (newHeight !== data.height) {
+        updateNote(data.id, { height: newHeight });
+      }
+    }
+  }, [data.id, data.content, data.height]);
 
   return (
     <g
@@ -208,7 +212,7 @@ export default function Note({ data, onPointerDown }) {
         } ${data.y + data.height} A${noteRadius} ${noteRadius} 0 0 1 ${data.x} ${
           data.y + data.height - noteRadius
         } L${data.x} ${data.y + noteFold}`}
-        fill={data.color}
+        fill={data.color || "#fcf7ac"}
         stroke={
           hovered
             ? "rgb(59 130 246)"
@@ -226,7 +230,7 @@ export default function Note({ data, onPointerDown }) {
         } A${noteRadius} ${noteRadius} 0 0 0 ${data.x + noteFold} ${data.y + noteFold - noteRadius} L${
           data.x + noteFold
         } ${data.y} L${data.x} ${data.y + noteFold} Z`}
-        fill={data.color}
+        fill={data.color || "#fcf7ac"}
         stroke={
           hovered
             ? "rgb(59 130 246)"
@@ -460,7 +464,7 @@ export default function Note({ data, onPointerDown }) {
                         <ColorPicker
                           usePopover={true}
                           readOnly={layout.readOnly}
-                          value={data.color}
+                          value={data.color || "#fcf7ac"}
                           onChange={(color) => updateNote(data.id, { color })}
                           onColorPick={(color) => handleColorPick(color)}
                         />
@@ -508,7 +512,7 @@ export default function Note({ data, onPointerDown }) {
             }
             onBlur={handleBlur}
             className="w-full resize-none outline-hidden overflow-y-hidden border-none select-none"
-            style={{ backgroundColor: data.color }}
+            style={{ backgroundColor: data.color || "#fcf7ac" }}
           />
         </div>
       </foreignObject>

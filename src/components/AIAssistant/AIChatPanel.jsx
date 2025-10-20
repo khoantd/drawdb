@@ -40,24 +40,14 @@ export default function AIChatPanel() {
   const { enums } = useEnums();
   const { setUndoStack, setRedoStack } = useUndoRedo();
 
-  // Debug: Log current context data
+  // Debug: Log current context data (only when tables change)
   useEffect(() => {
-    console.log("Current diagram context in AIChatPanel:");
-    console.log("- Tables:", tables);
-    console.log("- Relationships:", relationships);
-    console.log("- Database:", database);
-    console.log("- Areas:", areas);
-    console.log("- Notes:", notes);
-    console.log("- Types:", types);
-    console.log("- Enums:", enums);
-    
-    // Check if data is loaded
     if (tables && tables.length > 0) {
       console.log("✅ Diagram data is loaded and available for AI");
     } else {
       console.log("⚠️ Diagram data is not loaded yet or empty");
     }
-  }, [tables, relationships, database, areas, notes, types, enums]);
+  }, [tables?.length]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -157,6 +147,8 @@ export default function AIChatPanel() {
       console.log("Relationships to add:", suggestions.relationships);
       console.log("Notes to add:", suggestions.notes);
       let appliedCount = 0;
+      let tableCount = 0;
+      let noteCount = 0;
       let errors = [];
       
       // Apply table suggestions first
@@ -175,7 +167,7 @@ export default function AIChatPanel() {
           const newTable = {
             id: tableId,
             name: tableData.name,
-            x: 100 + (appliedCount * 300), // Spread tables horizontally
+            x: 100 + (tableCount * 300), // Spread tables horizontally
             y: 100,
             locked: false,
             fields: tableData.fields.map(field => ({
@@ -199,6 +191,7 @@ export default function AIChatPanel() {
           addedTables.push(newTable);
           console.log("Successfully added table:", newTable.name);
           appliedCount++;
+          tableCount++;
         } catch (error) {
           console.error("Error adding table:", error);
           errors.push(`Failed to add table ${tableData.name}: ${error.message}`);
@@ -259,11 +252,16 @@ export default function AIChatPanel() {
         try {
           console.log("Adding note:", noteData);
           const noteId = nanoid();
+          const xPos = Number(noteData.position?.x) || 100 + (noteCount * 250);
+          const yPos = Number(noteData.position?.y) || 100 + (noteCount * 150);
+          
+          console.log("Note position:", { x: xPos, y: yPos });
+          
           const newNote = {
             id: noteId,
             content: noteData.content,
-            x: noteData.position?.x || 100 + (appliedCount * 200),
-            y: noteData.position?.y || 100 + (appliedCount * 100),
+            x: xPos,
+            y: yPos,
             width: 200,
             height: 100,
             color: "#ffffcc"
@@ -272,6 +270,7 @@ export default function AIChatPanel() {
           addNote(newNote, true);
           console.log("Successfully added note:", newNote.content.substring(0, 50) + "...");
           appliedCount++;
+          noteCount++;
         } catch (error) {
           console.error("Error adding note:", error);
           errors.push(`Failed to add note: ${error.message}`);

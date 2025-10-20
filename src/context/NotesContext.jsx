@@ -17,8 +17,8 @@ export default function NotesContextProvider({ children }) {
     if (data) {
       setNotes((prev) => {
         const temp = prev.slice();
-        temp.splice(data.id, 0, data);
-        return temp.map((t, i) => ({ ...t, id: i }));
+        temp.push(data);
+        return temp;
       });
     } else {
       const height = 88;
